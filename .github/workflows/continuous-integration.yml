@@ -17,7 +17,7 @@ jobs:
          password: ${{ secrets.DOCKER_PASSWORD }}
        
      - name: Docker Compose Build
-       working-directory: ./docker-library-api-dotnet
+       working-directory: .
        run: docker compose build
 
      - name: Push to Docker Hub Container Registry
