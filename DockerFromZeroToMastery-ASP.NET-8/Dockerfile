@@ -12,19 +12,19 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["DockerFromZeroToMastery-ASP.NET-8/DockerFromZeroToMastery-ASP.NET-8.csproj", "DockerFromZeroToMastery-ASP.NET-8/"]
-RUN dotnet restore "./DockerFromZeroToMastery-ASP.NET-8/DockerFromZeroToMastery-ASP.NET-8.csproj"
+COPY ["docker-library-api-dotnet/docker-library-api-dotnet.csproj", "docker-library-api-dotnet/"]
+RUN dotnet restore "./docker-library-api-dotnet/docker-library-api-dotnet.csproj"
 COPY . .
-WORKDIR "/src/DockerFromZeroToMastery-ASP.NET-8"
-RUN dotnet build "./DockerFromZeroToMastery-ASP.NET-8.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/docker-library-api-dotnet"
+RUN dotnet build "./docker-library-api-dotnet.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Esta fase é usada para publicar o projeto de serviço a ser copiado para a fase final
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./DockerFromZeroToMastery-ASP.NET-8.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./docker-library-api-dotnet.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Esta fase é usada na produção ou quando executada no VS no modo normal (padrão quando não está usando a configuração de Depuração)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DockerFromZeroToMastery-ASP.NET-8.dll"]
+ENTRYPOINT ["dotnet", "docker-library-api-dotnet.dll"]
